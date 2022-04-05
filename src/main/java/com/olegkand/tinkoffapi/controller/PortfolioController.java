@@ -1,6 +1,7 @@
 package com.olegkand.tinkoffapi.controller;
 
 import com.olegkand.tinkoffapi.dto.StockPortfolioDto;
+import com.olegkand.tinkoffapi.model.Currency;
 import com.olegkand.tinkoffapi.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import ru.tinkoff.invest.openapi.model.rest.InstrumentType;
 import ru.tinkoff.invest.openapi.model.rest.PortfolioPosition;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +22,11 @@ public class PortfolioController {
     @GetMapping("/account/{checkNumber}")
     public String getAccountId(@PathVariable int checkNumber){
         return portfolioService.getAccount(checkNumber);
+    }
+
+    @GetMapping("/portfolio/getValue/{accountId}")
+    public Map<Currency, Double> getPortfolioValue(@PathVariable String accountId){
+        return portfolioService.getPortfolioValue(accountId);
     }
 
     @GetMapping("/portfolio/getAllStocks/{accountId}")

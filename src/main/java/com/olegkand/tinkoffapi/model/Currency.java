@@ -9,7 +9,8 @@ public enum Currency {
     CHF("CHF"),
     JPY("JPY"),
     CNY("CNY"),
-    TRY("TRY");
+    TRY("TRY"),
+    TOTAL_RUB("TOTAL_RUB");
 
     private String currency;
 

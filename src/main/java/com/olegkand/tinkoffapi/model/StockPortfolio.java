@@ -12,7 +12,7 @@ public class StockPortfolio {
     String ticker;
     String figi;
     String name;
-    BigDecimal lastPrice;
+    Double lastPrice;
     BigDecimal startPrice;
     BigDecimal lots;
     String type;

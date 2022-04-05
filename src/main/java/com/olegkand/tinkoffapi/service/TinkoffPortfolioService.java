@@ -11,11 +11,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.tinkoff.invest.openapi.OpenApi;
 import ru.tinkoff.invest.openapi.model.rest.InstrumentType;
+import ru.tinkoff.invest.openapi.model.rest.MarketInstrument;
 import ru.tinkoff.invest.openapi.model.rest.Orderbook;
 import ru.tinkoff.invest.openapi.model.rest.PortfolioPosition;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -138,5 +141,39 @@ public class TinkoffPortfolioService implements PortfolioService{
         var orderBook = openApi.getMarketContext().getMarketOrderbook(figi, 0);
         log.info("Getting price {} from TINKOFF", figi);
         return orderBook;
+    }
+
+    @Override
+    public Map<Currency, Double> getPortfolioValue(String accountId) {
+        try {
+            StockPortfolioDto allActive = getAllActive(openApi.getPortfolioContext()
+                    .getPortfolio(accountId).get().getPositions());
+
+            Map<Currency, Double> currencyDoubleMap = allActive.getStockPortfolioList().stream()
+                    .collect(Collectors.groupingBy(StockPortfolio::getCurrency,
+                            Collectors.summingDouble(StockPortfolio::getValue)));
+
+            Double totalValue = 0.0;
+            for (Map.Entry<Currency, Double> entry : currencyDoubleMap.entrySet()){
+                if (entry.getKey().equals(Currency.USD)){
+                    totalValue = totalValue + entry.getValue() * getUSDPrice(accountId);
+                } else {
+                    totalValue = totalValue + entry.getValue();
+                }
+            }
+
+            currencyDoubleMap.put(Currency.TOTAL_RUB, totalValue);
+            return currencyDoubleMap;
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Double getUSDPrice(String accountId) {
+        StockPortfolioDto currency = filterStocksByType(getPortfolio(accountId), InstrumentType.CURRENCY);
+        System.out.println(currency.getStockPortfolioList().get(0).getLastPrice());
+        return currency.getStockPortfolioList().get(0).getLastPrice();
     }
 }
