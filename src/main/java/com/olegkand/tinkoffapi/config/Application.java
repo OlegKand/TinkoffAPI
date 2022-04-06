@@ -28,10 +28,17 @@ public class Application {
         String BROKER_ACCOUNT_ID = api.getUserContext().getAccounts().get().getAccounts().get(0).getBrokerAccountId();
         String IIS_ACCOUNT_ID = api.getUserContext().getAccounts().get().getAccounts().get(1).getBrokerAccountId();
 
-        System.out.println(IIS_ACCOUNT_ID);
-        var contextBroker = api.getPortfolioContext()
-                .getPortfolio(IIS_ACCOUNT_ID).get().getPositions();
-        System.out.println(filterStocks(contextBroker));
+//        System.out.println(IIS_ACCOUNT_ID);
+//        var contextBroker = api.getPortfolioContext()
+//                .getPortfolio(IIS_ACCOUNT_ID).get().getPositions();
+//        System.out.println(filterStocks(contextBroker));
+
+        System.out.println(
+                api.getPortfolioContext().getPortfolio("2041834157").get().getPositions()
+        );
+//        getAllActive(openApi.getPortfolioContext()
+//                .getPortfolio(accountId).get().getPositions());
+
 
 
 //        System.out.println(api.getAuthToken());

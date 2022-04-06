@@ -3,3 +3,6 @@ server:
 
 api:
   isSandBoxMode: true
+bot:
+  BOT_TOKEN: 5212186235:AAFZrf2UMl7uvbgl38wVbUukwhSNb6GLG9I
+  BOT_NAME: Tinkoff_API_Telegram_bot

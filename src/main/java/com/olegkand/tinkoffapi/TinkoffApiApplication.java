@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@EnableAsync
+//@EnableAsync
 public class TinkoffApiApplication {
 
     public static void main(String[] args) {

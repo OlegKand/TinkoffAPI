@@ -15,6 +15,7 @@
     <description>TinkoffAPI</description>
     <properties>
         <java.version>11</java.version>
+        <telegram.version>5.0.1</telegram.version>
     </properties>
     <dependencies>
         <dependency>
@@ -70,7 +71,16 @@
             <artifactId>TinkoffAPI</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-spring-boot-starter</artifactId>
+            <version>5.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambotsextensions</artifactId>
+            <version>${telegram.version}</version>
+        </dependency>
 
     </dependencies>
 
