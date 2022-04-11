@@ -1,9 +1,13 @@
 package com.olegkand.tinkoffapi.bot;
 
+import com.olegkand.tinkoffapi.service.TinkoffInvestAPIService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,7 +20,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 
-@EqualsAndHashCode(callSuper = true)
 @Component
 @Data
 @ConfigurationProperties(prefix = "bot")
@@ -27,11 +30,10 @@ public class Bot extends TelegramLongPollingBot{
 
     ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
-    private final BotService botService;
+    private final TinkoffInvestAPIService tinkoffInvestAPIService;
 
-    @Autowired
-    public Bot(BotService botService){
-        this.botService = botService;
+    public Bot(TinkoffInvestAPIService tinkoffInvestAPIService){
+        this.tinkoffInvestAPIService = tinkoffInvestAPIService;
         initKeyBoard();
     }
 
@@ -50,21 +52,17 @@ public class Bot extends TelegramLongPollingBot{
         try{
             if(update.hasMessage() && update.getMessage().hasText())
             {
-                //Извлекаем из объекта сообщение пользователя
+
                 Message inMess = update.getMessage();
-                //Достаем из inMess id чата пользователя
                 String chatId = inMess.getChatId().toString();
-                //Получаем текст сообщения пользователя, отправляем в написанный нами обработчик
                 String response = parseMessage(inMess.getText());
-                //Создаем объект класса SendMessage - наш будущий ответ пользователю
+
                 SendMessage outMess = new SendMessage();
 
-                //Добавляем в наше сообщение id чата а также наш ответ
                 outMess.setChatId(chatId);
                 outMess.setText(response);
                 outMess.setReplyMarkup(replyKeyboardMarkup);
 
-                //Отправка в чат
                 execute(outMess);
             }
         } catch (TelegramApiException e) {
@@ -82,39 +80,47 @@ public class Bot extends TelegramLongPollingBot{
                 break;
             case "/get":
             case "Результат по портфелю":
-                response = botService.getTotalPortfolio();
+                response = "Результат по портфелю - функция пока не работает";
                 break;
-            case "/get5":
+            case "/get_5_top":
             case "Топ 5 роста":
-                response = "Топ 5 роста";
+                response = "Топ 5 роста - функция пока не работает";
                 break;
-            case "/get5low":
+            case "/get_5_low":
             case "Топ 5 падений":
-                response = "Топ 5 падений";
+                response = "Топ 5 падений - функция пока не работает";
+                break;
+            case "Акция по тикеру":
+                response = "Введите тикер акции (например YNDX)";
                 break;
             default:
-                response = "Сообщение не распознано";
+                response = tinkoffInvestAPIService.getShareByTicker(textMsg);
                 break;
         }
         return response;
     }
 
     public void initKeyBoard(){
-        //Создаем объект будущей клавиатуры и выставляем нужные настройки
+
         replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true); //подгоняем размер
         replyKeyboardMarkup.setOneTimeKeyboard(false); //скрываем после использования
 
-        //Создаем список с рядами кнопок
+
         ArrayList<KeyboardRow> keyboardRows = new ArrayList<>();
-        //Создаем один ряд кнопок и добавляем его в список
         KeyboardRow keyboardRow = new KeyboardRow();
         keyboardRows.add(keyboardRow);
-        //Добавляем одну кнопку с текстом "Просвяти" наш ряд
+
         keyboardRow.add(new KeyboardButton("Результат по портфелю"));
         keyboardRow.add(new KeyboardButton("Топ 5 роста"));
         keyboardRow.add(new KeyboardButton("Топ 5 падений"));
-        //добавляем лист с одним рядом кнопок в главный объект
+
+        KeyboardRow keyboardRowTwo = new KeyboardRow();
+        keyboardRows.add(keyboardRowTwo);
+
+        keyboardRowTwo.add(new KeyboardButton("Дивиденды"));
+        keyboardRowTwo.add(new KeyboardButton("Акция по тикеру"));
+
         replyKeyboardMarkup.setKeyboard(keyboardRows);
     }
 
